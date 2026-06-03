@@ -775,10 +775,11 @@ const app = createApp({
                     .where('barberId', '==', this.selectedBarber.id)
                     .where('date', '==', this.selectedDate)
                     .where('time', '==', this.selectedTime)
-                    .where('status', '!=', 'cancelled')
                     .get();
 
-                if (!existingBooking.empty) {
+                const hasActiveBooking = existingBooking.docs.some(doc => doc.data().status !== 'cancelled');
+
+                if (hasActiveBooking) {
                     this.errorMessage = 'Ёрли бон! Бу вақтда сартарош аллақачон бронирования қилинган. Бошқа вақтни танланг.';
                     // Вақт слотлари қайта ўндаш
                     this.setupRealtimeListeners();
