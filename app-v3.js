@@ -368,6 +368,7 @@ const app = createApp({
                                     </td>
                                     <td>
                                         <button class="btn btn-success" @click="saveServiceChanges(service)">Saqlash</button>
+                                        <button class="btn btn-danger" @click="deleteService(service)" style="margin-left: 8px;">O'chirish</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -769,6 +770,21 @@ const app = createApp({
             }
 
             try {
+                // Вақт слотинг дубл-бронирование қилинмаслигини текшириш
+                const existingBooking = await db.collection('bookings')
+                    .where('barberId', '==', this.selectedBarber.id)
+                    .where('date', '==', this.selectedDate)
+                    .where('time', '==', this.selectedTime)
+                    .where('status', '!=', 'cancelled')
+                    .get();
+
+                if (!existingBooking.empty) {
+                    this.errorMessage = 'Ёрли бон! Бу вақтда сартарош аллақачон бронирования қилинган. Бошқа вақтни танланг.';
+                    // Вақт слотлари қайта ўндаш
+                    this.setupRealtimeListeners();
+                    return;
+                }
+
                 await db.collection('bookings').add({
                     userId: this.currentUser.id,
                     userName: this.currentUser.fullName || this.currentUser.displayName,
@@ -887,6 +903,19 @@ const app = createApp({
                     duration: service.editDuration
                 });
                 this.successMessage = `✓ ${service.name} narxi yangilandi`;
+                setTimeout(() => this.successMessage = '', 3000);
+            } catch (error) {
+                this.errorMessage = error.message;
+            }
+        },
+
+        async deleteService(service) {
+            const confirmed = confirm(`"${service.name}" xizmatini o'chirishni xohlaysizmi?`);
+            if (!confirmed) return;
+
+            try {
+                await db.collection('services').doc(service.id).delete();
+                this.successMessage = `✓ ${service.name} o‘chirildi`;
                 setTimeout(() => this.successMessage = '', 3000);
             } catch (error) {
                 this.errorMessage = error.message;
