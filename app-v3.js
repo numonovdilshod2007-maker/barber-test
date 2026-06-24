@@ -3,7 +3,6 @@ console.log('app-v3.js sees FIREBASE_CONFIG.apiKey =', typeof FIREBASE_CONFIG !=
 const { createApp } = Vue;
 
 const ADMIN_EMAILS = ['dnumonov49@gmail.com'];
-const ALLOWED_BARBERS = ['Sardor', 'Doston'];
 
 const app = createApp({
     template: `
@@ -11,7 +10,7 @@ const app = createApp({
             <!-- Loading Screen -->
             <div v-if="isLoading" style="text-align: center; padding: 100px;">
                 <div class="spinner"></div>
-                <p style="color: #666; margin-top: 20px;">Yuklanmoqda...</p>
+                <p style="color: var(--ivory-faint); margin-top: 20px;">Yuklanmoqda...</p>
             </div>
 
             <!-- Auth Page -->
@@ -25,7 +24,7 @@ const app = createApp({
                         🔐 Google bilan kirish
                     </button>
 
-                    <div style="text-align: center; color: #999; margin: 20px 0;">yoki</div>
+                    <div style="text-align: center; color: var(--ivory-faint); margin: 20px 0;">yoki</div>
 
                     <div class="form-group">
                         <label>Ism Familiya</label>
@@ -118,13 +117,13 @@ const app = createApp({
                     <div class="alert alert-info">
                         📅 Quyidagi bosqichlarni amalga oshiring: 1) Xizmatni tanlang 2) Sartoroshni tanlang 3) Vaqtni tanlang 4) Bronilashtiring
                     </div>
-                    <div class="alert alert-info" style="background: #eef8ff; color: #2d6fb8; border-color: #b3d8ff;">
+                    <div class="alert alert-info" style="background: rgba(56, 189, 248, 0.12); color: #7dd3fc; border-color: rgba(56, 189, 248, 0.3);">
                         🛋️ Hozir xonada <strong>{{ barbers.length }}</strong> sartorosh bor: <strong>Sardor</strong> va <strong>Doston</strong>.
                     </div>
 
                     <div>
-                        <h3 style="margin-bottom: 15px; color: #333;">1️⃣ Xizmatni tanlang</h3>
-                        <div v-if="services.length === 0" style="color: #999;">Xizmatlar yuklanmoqda...</div>
+                        <h3 style="margin-bottom: 15px; color: var(--ivory);">1️⃣ Xizmatni tanlang</h3>
+                        <div v-if="services.length === 0" style="color: var(--ivory-faint);">Xizmatlar yuklanmoqda...</div>
                         <div v-else class="services-grid">
                             <div 
                                 v-for="service in services" 
@@ -141,8 +140,8 @@ const app = createApp({
                     </div>
 
                     <div style="margin-top: 30px;">
-                        <h3 style="margin-bottom: 15px; color: #333;">2️⃣ Sartoroshni tanlang</h3>
-                        <div v-if="barbers.length === 0" style="color: #999;">Sartoroshlar yuklanmoqda...</div>
+                        <h3 style="margin-bottom: 15px; color: var(--ivory);">2️⃣ Sartoroshni tanlang</h3>
+                        <div v-if="barbers.length === 0" style="color: var(--ivory-faint);">Sartoroshlar yuklanmoqda...</div>
                         <div v-else class="barbers-grid">
                             <div 
                                 v-for="barber in barbers" 
@@ -162,13 +161,13 @@ const app = createApp({
                         </div>
                     </div>
 
-                    <div class="live-queue" style="margin-top: 30px; padding: 20px; background: #f8fbff; border-radius: 10px; border: 1px solid #dce7ff;">
-                        <h3 style="margin-bottom: 15px; color: #333;">👥 Jonli bronlar</h3>
-                        <div v-if="liveQueue.length === 0" style="color: #666;">Hozir hech qanday jonli bron yo'q.</div>
+                    <div class="live-queue" style="margin-top: 30px; padding: 20px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle);">
+                        <h3 style="margin-bottom: 15px; color: var(--ivory);">👥 Jonli bronlar</h3>
+                        <div v-if="liveQueue.length === 0" style="color: var(--ivory-faint);">Hozir hech qanday jonli bron yo'q.</div>
                         <div v-else class="queue-list">
-                            <div v-for="booking in liveQueue" :key="booking.id" class="queue-item" style="padding: 12px; border-bottom: 1px solid #e9efff;">
+                            <div v-for="booking in liveQueue" :key="booking.id" class="queue-item" style="padding: 12px; border-bottom: 1px solid var(--border-subtle);">
                                 <strong>{{ booking.userName }}</strong> — {{ booking.serviceName }}
-                                <div style="font-size: 13px; color: #555;">{{ booking.barberName }} | {{ formatDate(booking.date) }} {{ booking.time }} | {{ getStatusLabel(booking.status) }}</div>
+                                <div style="font-size: 13px; color: var(--ivory-dim);">{{ booking.barberName }} | {{ formatDate(booking.date) }} {{ booking.time }} | {{ getStatusLabel(booking.status) }}</div>
                             </div>
                         </div>
                     </div>
@@ -214,14 +213,14 @@ const app = createApp({
                                     {{ time }}
                                 </div>
                             </div>
-                            <div v-else style="color: #999; text-align: center; padding: 20px;">
+                            <div v-else style="color: var(--ivory-faint); text-align: center; padding: 20px;">
                                 Iltimos, avval sanani tanlang
                             </div>
                         </div>
                     </div>
 
-                    <div v-if="selectedService && selectedBarber && selectedDate && selectedTime" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                        <h3 style="margin-bottom: 15px; color: #333;">📋 Bronilashtirish Tafsillari</h3>
+                    <div v-if="selectedService && selectedBarber && selectedDate && selectedTime" style="background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border-subtle); margin-top: 20px;">
+                        <h3 style="margin-bottom: 15px; color: var(--ivory);">📋 Bronilashtirish Tafsillari</h3>
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
                             <div><strong>Xizmat:</strong> {{ selectedService.name }}</div>
                             <div><strong>Narxi:</strong> {{ selectedService.price.toLocaleString() }} so'm</div>
@@ -235,7 +234,26 @@ const app = createApp({
                 </div>
 
                 <div v-if="activeTab === 'myBookings'" class="dashboard">
-                    <div v-if="userBookings.length === 0" style="text-align: center; padding: 40px; color: #999;">
+                    <div class="card" style="margin-bottom: 20px; padding: 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px;">
+                        <div v-if="!currentUser.telegramChatId">
+                            <p style="margin: 0 0 8px; font-weight: 600;">🔔 Bron tasdiqlarini Telegram'da olish</p>
+                            <p style="margin: 0 0 10px; font-size: 13px; color: var(--ivory-faint);">
+                                1) Telegram'da <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> ni oching va <b>/start</b> bosing — u sizning Chat ID'ingizni yuboradi.<br>
+                                2) Chat ID raqamini nusxalab, pastga kiriting va saqlang.<br>
+                                3) Keyin <a href="https://t.me/barber_honasi_bot" target="_blank">@barber_honasi_bot</a> ga o'tib, <b>/start</b> bosing (xabarlar shu yerga keladi).
+                            </p>
+                            <div style="display: flex; gap: 8px;">
+                                <input v-model="telegramChatIdInput" type="text" placeholder="Masalan: 5776778620" style="flex: 1;">
+                                <button class="btn btn-primary" @click="saveTelegramChatId" style="white-space: nowrap;">Saqlash</button>
+                            </div>
+                        </div>
+                        <div v-else style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--success);">✓ Telegram bildirishnomalari ulangan</span>
+                            <button class="btn btn-secondary" @click="unlinkTelegramChatId" style="font-size: 12px; padding: 5px 10px;">Uzish</button>
+                        </div>
+                    </div>
+
+                    <div v-if="userBookings.length === 0" style="text-align: center; padding: 40px; color: var(--ivory-faint);">
                         Sizda bronilashtirish yo'q
                     </div>
                     <div v-else>
@@ -279,7 +297,7 @@ const app = createApp({
 
                 <div v-if="activeTab === 'reviews'" class="dashboard">
                     <div style="margin-bottom: 30px;">
-                        <h3 style="margin-bottom: 15px; color: #333;">Sartorosh haqida sharh qoldiring</h3>
+                        <h3 style="margin-bottom: 15px; color: var(--ivory);">Sartorosh haqida sharh qoldiring</h3>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Sartorosh tanlang</label>
@@ -297,7 +315,7 @@ const app = createApp({
                         </div>
                         <div class="form-group">
                             <label>Sharh</label>
-                            <textarea v-model="reviewForm.comment" placeholder="O'z fikringizni yozing..." style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-height: 100px; font-family: inherit; font-size: 14px;"></textarea>
+                            <textarea v-model="reviewForm.comment" placeholder="O'z fikringizni yozing..." style="padding: 10px; border: 1px solid var(--border-subtle); border-radius: 12px; min-height: 100px; background: rgba(255,255,255,0.04); color: var(--ivory); font-family: inherit; font-size: 14px;"></textarea>
                         </div>
                         <button class="btn btn-primary" @click="submitReview" style="width: 100%; padding: 12px; margin-top: 10px;">
                             Sharhni jo'natish
@@ -306,7 +324,7 @@ const app = createApp({
                 </div>
 
                 <div v-if="activeTab === 'admin' && currentUser.isAdmin" class="admin-section">
-                    <h3 style="color: #333;">⚙️ Admin Panel</h3>
+                    <h3 style="color: var(--ivory);">⚙️ Admin Panel</h3>
 
                     <div class="admin-form">
                         <h4 style="margin-bottom: 15px;">Yangi Xizmat Qo'shish</h4>
@@ -344,6 +362,15 @@ const app = createApp({
                             </div>
                         </div>
                         <button class="btn btn-primary" @click="addBarber">Sartorosh qo'shish</button>
+                    </div>
+
+                    <div class="admin-form">
+                        <h4 style="margin-bottom: 15px;">🧹 Dublikat Sartoroshlarni Tozalash</h4>
+                        <p style="font-size: 13px; color: var(--ivory-faint); margin-bottom: 10px;">
+                            Bir xil ismli sartaroshlardan faqat bittasini (eng ko'p sharhga egasini) qoldiradi.
+                            Boshqalarning bronlari va sharhlari shu asosiy sartaroshga ko'chiriladi, so'ng dublikatlar o'chiriladi.
+                        </p>
+                        <button class="btn btn-danger" @click="cleanupDuplicateBarbers">Dublikatlarni tozalash</button>
                     </div>
 
                     <div class="admin-form">
@@ -394,7 +421,7 @@ const app = createApp({
                                     <td>{{ formatDate(booking.date) }} {{ booking.time }}</td>
                                     <td>{{ getStatusLabel(booking.status) }}</td>
                                     <td>
-                                        <select v-model="booking.status" style="padding: 5px; border-radius: 3px; border: 1px solid #ddd;">
+                                        <select v-model="booking.status" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--ivory);">
                                             <option value="confirmed">Tasdiqlangan</option>
                                             <option value="pending">Kutayotgan</option>
                                             <option value="cancelled">Bekor qilingan</option>
@@ -410,7 +437,7 @@ const app = createApp({
                 </div>
 
                 <div v-if="activeTab === 'barbers'" class="dashboard">
-                    <h3 style="margin-bottom: 20px; color: #333;">👨‍💼 Bizning Sartoroshlar</h3>
+                    <h3 style="margin-bottom: 20px; color: var(--ivory);">👨‍💼 Bizning Sartoroshlar</h3>
                     <div class="barbers-grid">
                         <div v-for="barber in barbers" :key="barber.id" class="barber-card">
                             <div class="barber-avatar">{{ barber.avatar }}</div>
@@ -424,7 +451,7 @@ const app = createApp({
                 </div>
 
                 <div v-if="activeTab === 'services'" class="dashboard">
-                    <h3 style="margin-bottom: 20px; color: #333;">💈 Bizning Xizmatlar</h3>
+                    <h3 style="margin-bottom: 20px; color: var(--ivory);">💈 Bizning Xizmatlar</h3>
                     <div class="services-grid">
                         <div v-for="service in services" :key="service.id" class="service-card">
                             <div class="service-name">{{ service.name }}</div>
@@ -448,6 +475,7 @@ const app = createApp({
                 password: '',
                 phone: ''
             },
+            telegramChatIdInput: '',
             authError: '',
             successMessage: '',
             errorMessage: '',
@@ -660,6 +688,7 @@ const app = createApp({
                     displayName: user.displayName || profileData.fullName || 'Foydalanuvchi',
                     email: user.email,
                     phone: profileData.phone || '',
+                    telegramChatId: profileData.telegramChatId || '',
                     isAdmin: this.isAdminEmail(user.email),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
@@ -692,6 +721,7 @@ const app = createApp({
                         fullName: profile.fullName || user.displayName,
                         displayName: profile.displayName || user.displayName,
                         phone: profile.phone || '',
+                        telegramChatId: profile.telegramChatId || '',
                         isAdmin: profile.isAdmin || this.isAdminEmail(user.email)
                     };
 
@@ -713,6 +743,7 @@ const app = createApp({
                         fullName: user.displayName || this.authForm.fullName || 'Foydalanuvchi',
                         displayName: user.displayName || this.authForm.fullName || 'Foydalanuvchi',
                         phone: '',
+                        telegramChatId: '',
                         isAdmin: this.isAdminEmail(user.email)
                     };
                 }
@@ -720,6 +751,11 @@ const app = createApp({
                 this.activeTab = 'booking';
                 this.authError = '';
                 this.isLoading = false;
+
+                // Boshlang'ich ma'lumotlarni faqat admin to'ldira oladi (Firestore qoidalariga mos)
+                if (this.currentUser.isAdmin) {
+                    this.seedInitialData();
+                }
             } catch (error) {
                 console.error('Auth state xatosi:', error);
                 this.errorMessage = 'Foydalanuvchi maʼlumotlarini yuklashda xato yuz berdi';
@@ -801,6 +837,32 @@ const app = createApp({
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
+                // Admin'ga Telegram orqali bildirishnoma yuborish (xato bo'lsa ham bronni bloklamaydi)
+                const clientName = this.currentUser.fullName || this.currentUser.displayName || this.currentUser.email || 'Mijoz';
+                sendTelegramNotification(
+                    `🔔 <b>Yangi bronilashtirish!</b>\n\n` +
+                    `👤 Mijoz: ${clientName}\n` +
+                    `💈 Xizmat: ${this.selectedService.name}\n` +
+                    `✂️ Sartarosh: ${this.selectedBarber.name}\n` +
+                    `📅 Sana: ${this.selectedDate}\n` +
+                    `🕐 Vaqt: ${this.selectedTime}\n` +
+                    `💰 Narx: ${this.selectedService.price} so'm`
+                );
+
+                // Mijozga ham, agar Telegram ulagan bo'lsa, tasdiq xabari
+                if (this.currentUser.telegramChatId) {
+                    sendTelegramNotification(
+                        `✅ <b>Broningiz tasdiqlandi!</b>\n\n` +
+                        `💈 Xizmat: ${this.selectedService.name}\n` +
+                        `✂️ Sartarosh: ${this.selectedBarber.name}\n` +
+                        `📅 Sana: ${this.selectedDate}\n` +
+                        `🕐 Vaqt: ${this.selectedTime}\n` +
+                        `💰 Narx: ${this.selectedService.price} so'm\n\n` +
+                        `Kutib qolamiz! 💇`,
+                        this.currentUser.telegramChatId
+                    );
+                }
+
                 this.successMessage = '✓ Bronilashtirish muvaffaqiyatli saqlandi!';
                 this.selectedService = null;
                 this.selectedBarber = null;
@@ -817,9 +879,58 @@ const app = createApp({
             return this.bookings.filter(b => b.barberId === barberId && b.status === 'confirmed' && b.date >= new Date().toISOString().slice(0, 10)).length;
         },
 
+        async saveTelegramChatId() {
+            const chatId = this.telegramChatIdInput.trim();
+            if (!chatId || !/^\d+$/.test(chatId)) {
+                this.errorMessage = 'Iltimos, faqat raqamlardan iborat Chat ID kiriting';
+                return;
+            }
+
+            try {
+                await db.collection('users').doc(this.currentUser.id).update({ telegramChatId: chatId });
+                this.currentUser.telegramChatId = chatId;
+                this.telegramChatIdInput = '';
+                this.successMessage = '✓ Telegram ulandi! Endi bron tasdiqlari shu yerga keladi.';
+
+                sendTelegramNotification(
+                    `👋 Salom, ${this.currentUser.fullName || this.currentUser.displayName}! Endi bronlaringiz haqida shu yerga xabar keladi.`,
+                    chatId
+                );
+
+                setTimeout(() => this.successMessage = '', 4000);
+            } catch (error) {
+                this.errorMessage = 'Telegram ulashda xato: ' + error.message;
+            }
+        },
+
+        async unlinkTelegramChatId() {
+            try {
+                await db.collection('users').doc(this.currentUser.id).update({ telegramChatId: '' });
+                this.currentUser.telegramChatId = '';
+                this.successMessage = '✓ Telegram uzildi';
+                setTimeout(() => this.successMessage = '', 3000);
+            } catch (error) {
+                this.errorMessage = error.message;
+            }
+        },
+
         async cancelBooking(bookingId) {
             try {
+                const booking = this.bookings.find(b => b.id === bookingId);
+
                 await db.collection('bookings').doc(bookingId).update({ status: 'cancelled' });
+
+                if (booking) {
+                    sendTelegramNotification(
+                        `❌ <b>Bron bekor qilindi</b>\n\n` +
+                        `👤 Mijoz: ${booking.userName || booking.userEmail}\n` +
+                        `💈 Xizmat: ${booking.serviceName}\n` +
+                        `✂️ Sartarosh: ${booking.barberName}\n` +
+                        `📅 Sana: ${booking.date}\n` +
+                        `🕐 Vaqt: ${booking.time}`
+                    );
+                }
+
                 this.successMessage = '✓ Bronilashtirish bekor qilindi';
                 setTimeout(() => this.successMessage = '', 3000);
             } catch (error) {
@@ -929,11 +1040,6 @@ const app = createApp({
                 return;
             }
 
-            if (!ALLOWED_BARBERS.includes(this.adminForm.barberName)) {
-                this.errorMessage = 'Faqat Sardor va Doston qo‘shilishi mumkin';
-                return;
-            }
-
             try {
                 const barberDoc = await db.collection('barbers').where('name', '==', this.adminForm.barberName).get();
                 if (!barberDoc.empty) {
@@ -957,6 +1063,91 @@ const app = createApp({
                 setTimeout(() => this.successMessage = '', 3000);
             } catch (error) {
                 this.errorMessage = error.message;
+            }
+        },
+
+        async cleanupDuplicateBarbers() {
+            if (!confirm('Dublikat sartoroshlarni tozalashni tasdiqlaysizmi? Bu amalni qaytarib bo\'lmaydi.')) {
+                return;
+            }
+
+            try {
+                const snapshot = await db.collection('barbers').get();
+                const allBarbers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Har bir sartarosh uchun bron sonini hisoblash
+                const bookingsSnapshot = await db.collection('bookings').get();
+                const bookingCounts = {};
+                bookingsSnapshot.docs.forEach(doc => {
+                    const barberId = doc.data().barberId;
+                    bookingCounts[barberId] = (bookingCounts[barberId] || 0) + 1;
+                });
+
+                // Ismi bo'yicha guruhlash
+                const groups = {};
+                allBarbers.forEach(barber => {
+                    if (!groups[barber.name]) groups[barber.name] = [];
+                    groups[barber.name].push(barber);
+                });
+
+                let removedCount = 0;
+
+                for (const name in groups) {
+                    const group = groups[name];
+                    if (group.length <= 1) continue; // Dublikat yo'q
+
+                    // Eng ko'p bronga ega bo'lganini "asosiy" deb tanlaymiz
+                    group.sort((a, b) => (bookingCounts[b.id] || 0) - (bookingCounts[a.id] || 0));
+                    const primary = group[0];
+                    const duplicates = group.slice(1);
+
+                    // Reyting va sharhlar sonini hamma dublikatlar boyicha jamlash
+                    let totalReviewCount = Number(primary.reviewCount) || 0;
+                    let weightedRatingSum = (Number(primary.rating) || 0) * totalReviewCount;
+
+                    for (const dup of duplicates) {
+                        const dupReviewCount = Number(dup.reviewCount) || 0;
+                        const dupRating = Number(dup.rating) || 0;
+                        weightedRatingSum += dupRating * dupReviewCount;
+                        totalReviewCount += dupReviewCount;
+
+                        // Dublikatga tegishli bookinglarni asosiy sartaroshga ko'chirish
+                        const dupBookings = await db.collection('bookings').where('barberId', '==', dup.id).get();
+                        const bookingUpdates = dupBookings.docs.map(doc =>
+                            doc.ref.update({ barberId: primary.id, barberName: primary.name })
+                        );
+                        await Promise.all(bookingUpdates);
+
+                        // Dublikatga tegishli sharhlarni asosiy sartaroshga ko'chirish
+                        const dupReviews = await db.collection('reviews').where('barberId', '==', dup.id).get();
+                        const reviewUpdates = dupReviews.docs.map(doc =>
+                            doc.ref.update({ barberId: primary.id, barberName: primary.name })
+                        );
+                        await Promise.all(reviewUpdates);
+
+                        // Dublikatni o'chirish
+                        await db.collection('barbers').doc(dup.id).delete();
+                        removedCount++;
+                    }
+
+                    // Asosiy sartaroshning reyting va sharhlar sonini yangilash
+                    if (duplicates.length > 0) {
+                        const finalRating = totalReviewCount > 0
+                            ? Number((weightedRatingSum / totalReviewCount).toFixed(1))
+                            : (Number(primary.rating) || 0);
+                        await db.collection('barbers').doc(primary.id).update({
+                            rating: finalRating,
+                            reviewCount: totalReviewCount
+                        });
+                    }
+                }
+
+                this.successMessage = removedCount > 0
+                    ? `✓ ${removedCount} ta dublikat sartorosh o'chirildi`
+                    : 'Dublikat topilmadi';
+                setTimeout(() => this.successMessage = '', 4000);
+            } catch (error) {
+                this.errorMessage = 'Tozalashda xato: ' + error.message;
             }
         },
 
@@ -1026,9 +1217,7 @@ const app = createApp({
             });
 
             db.collection('barbers').orderBy('name').onSnapshot(snapshot => {
-                this.barbers = snapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .filter(barber => ALLOWED_BARBERS.includes(barber.name));
+                this.barbers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             });
 
             db.collection('bookings').orderBy('date', 'desc').onSnapshot(snapshot => {
@@ -1049,25 +1238,13 @@ const app = createApp({
                     defaultServices.forEach(service => db.collection('services').add({ ...service, createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
                 }
 
-                const barbersSnapshot = await db.collection('barbers').get();
+                const barbersSnapshot = await db.collection('barbers').limit(1).get();
                 if (barbersSnapshot.empty) {
                     const defaultBarbers = [
                         { name: 'Sardor', rating: 4.9, avatar: '💈', available: true, reviewCount: 12 },
                         { name: 'Doston', rating: 4.8, avatar: '✂️', available: true, reviewCount: 10 }
                     ];
                     defaultBarbers.forEach(barber => db.collection('barbers').add({ ...barber, createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
-                } else {
-                    const deletePromises = [];
-                    barbersSnapshot.docs.forEach(doc => {
-                        const data = doc.data();
-                        if (!ALLOWED_BARBERS.includes(data.name)) {
-                            deletePromises.push(doc.ref.delete());
-                        }
-                    });
-                    if (deletePromises.length > 0) {
-                        await Promise.all(deletePromises);
-                        console.log('Deleted old barber records:', deletePromises.length);
-                    }
                 }
             } catch (error) {
                 console.error('Maʼlumotlarni seed qilishda xato:', error);
@@ -1098,7 +1275,6 @@ const app = createApp({
                 this.authError = err.message || String(err);
             });
         this.setupRealtimeListeners();
-        this.seedInitialData();
     }
 });
 

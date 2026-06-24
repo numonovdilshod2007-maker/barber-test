@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Yordamchi funksiyalar
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin email'lar ro'yxati - app-v3.js dagi ADMIN_EMAILS bilan bir xil bo'lishi shart
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email in ['dnumonov49@gmail.com'];
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ===== USERS =====
+    // Har kim faqat o'z profilini o'qiy/yoza oladi (isAdmin maydonini o'zi o'zgartira olmaydi). Admin hammasini o'qiy oladi.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) &&
+        request.resource.data.isAdmin == isAdmin();
+      allow update: if isAdmin() ||
+        (isOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin);
+      allow delete: if isAdmin();
+    }
+
+    // ===== SERVICES =====
+    // Hamma o'qiy oladi (sayt ochiq), faqat admin yoza/o'zgartira/o'chira oladi.
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ===== BARBERS =====
+    // Hamma o'qiy oladi. Yozish - faqat admin, BIROQ rating/reviewCount
+    // maydonlarini review qoldirgan foydalanuvchi yangilay olishi kerak.
+    match /barbers/{barberId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() ||
+        (isSignedIn() &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']));
+    }
+
+    // ===== BOOKINGS =====
+    // Hamma tizimga kirgan foydalanuvchi barcha bronlarni o'qiy oladi
+    // (bo'sh/band vaqt slotlarini aniqlash uchun shart - sana/vaqt/sartarosh ma'lumoti maxfiy emas).
+    // Lekin faqat o'zining bronini yarata oladi, faqat o'z bronining statusini o'zgartira oladi.
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == request.auth.uid;
+      // Foydalanuvchi faqat o'z bronini, faqat 'status' maydonini o'zgartira oladi (bekor qilish uchun)
+      allow update: if isAdmin() ||
+        (isSignedIn() &&
+         resource.data.userId == request.auth.uid &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']));
+      allow delete: if isAdmin();
+    }
+
+    // ===== REVIEWS =====
+    // Hamma o'qiy oladi. Faqat tizimga kirgan foydalanuvchi o'z nomidan yoza oladi.
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
