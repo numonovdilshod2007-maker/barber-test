@@ -1094,19 +1094,74 @@ body {
         font-size: 13px;
     }
 
+    /* Jadvallarni mobilda gorizontal scroll qilish o'rniga, vertikal kartochkalarga aylantiramiz */
     .bookings-table,
     .services-table {
         display: block;
         width: 100%;
-        overflow-x: auto;
+        border: none;
+        background: transparent;
     }
 
-    .bookings-table th,
+    .bookings-table thead,
+    .services-table thead {
+        display: none;
+    }
+
+    .bookings-table tbody,
+    .services-table tbody {
+        display: block;
+    }
+
+    .bookings-table tbody tr,
+    .services-table tbody tr {
+        display: block;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 16px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+
+    .bookings-table tbody tr:hover {
+        background: var(--bg-card);
+    }
+
     .bookings-table td,
-    .services-table th,
     .services-table td {
-        padding: 10px;
-        white-space: nowrap;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--border-subtle);
+        white-space: normal;
+        text-align: right;
+    }
+
+    .bookings-table td:last-child,
+    .services-table td:last-child {
+        border-bottom: none;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    /* Ustun nomini chap tomonda yorliq sifatida ko'rsatish */
+    .bookings-table td::before,
+    .services-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--ivory-faint);
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    .services-table input.inline-input {
+        max-width: 110px;
+        text-align: right;
     }
 
     .form-row {

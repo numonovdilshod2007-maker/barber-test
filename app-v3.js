@@ -270,16 +270,16 @@ const app = createApp({
                             </thead>
                             <tbody>
                                 <tr v-for="booking in userBookings" :key="booking.id">
-                                    <td>{{ booking.barberName }}</td>
-                                    <td>{{ booking.serviceName }}</td>
-                                    <td>{{ formatDate(booking.date) }} {{ booking.time }}</td>
-                                    <td>{{ booking.price.toLocaleString() }} so'm</td>
-                                    <td>
+                                    <td data-label="Sartorosh">{{ booking.barberName }}</td>
+                                    <td data-label="Xizmat">{{ booking.serviceName }}</td>
+                                    <td data-label="Sana & Vaqt">{{ formatDate(booking.date) }} {{ booking.time }}</td>
+                                    <td data-label="Narxi">{{ booking.price.toLocaleString() }} so'm</td>
+                                    <td data-label="Holat">
                                         <span class="status-badge" :class="booking.status">
                                             {{ getStatusLabel(booking.status) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-label="Amallar">
                                         <button 
                                             v-if="booking.status === 'confirmed'"
                                             class="btn btn-danger" 
@@ -431,14 +431,14 @@ const app = createApp({
                             </thead>
                             <tbody>
                                 <tr v-for="service in services" :key="service.id">
-                                    <td>{{ service.name }}</td>
-                                    <td>
+                                    <td data-label="Xizmat">{{ service.name }}</td>
+                                    <td data-label="Narx (so'm)">
                                         <input type="number" v-model.number="service.editPrice" min="0" class="inline-input">
                                     </td>
-                                    <td>
+                                    <td data-label="Vaqt (min)">
                                         <input type="number" v-model.number="service.editDuration" min="5" class="inline-input">
                                     </td>
-                                    <td>
+                                    <td data-label="Amallar">
                                         <button class="btn btn-success" @click="saveServiceChanges(service)">Saqlash</button>
                                         <button class="btn btn-danger" @click="deleteService(service)" style="margin-left: 8px;">O'chirish</button>
                                     </td>
@@ -461,11 +461,11 @@ const app = createApp({
                             </thead>
                             <tbody>
                                 <tr v-for="booking in allBookings" :key="booking.id">
-                                    <td>{{ booking.userName }}</td>
-                                    <td>{{ booking.barberName }}</td>
-                                    <td>{{ formatDate(booking.date) }} {{ booking.time }}</td>
-                                    <td>{{ getStatusLabel(booking.status) }}</td>
-                                    <td>
+                                    <td data-label="Foydalanuvchi">{{ booking.userName }}</td>
+                                    <td data-label="Sartorosh">{{ booking.barberName }}</td>
+                                    <td data-label="Sana & Vaqt">{{ formatDate(booking.date) }} {{ booking.time }}</td>
+                                    <td data-label="Holat">{{ getStatusLabel(booking.status) }}</td>
+                                    <td data-label="Amallar">
                                         <select v-model="booking.status" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--ivory);">
                                             <option value="confirmed">Tasdiqlangan</option>
                                             <option value="pending">Kutayotgan</option>
