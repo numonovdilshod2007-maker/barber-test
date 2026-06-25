@@ -327,7 +327,10 @@ const app = createApp({
                     <h3 style="color: var(--ivory);">⚙️ Admin Panel</h3>
 
                     <div class="admin-form">
-                        <h4 style="margin-bottom: 18px;">📊 Statistika</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+                            <h4 style="margin: 0;">📊 Statistika</h4>
+                            <button class="btn btn-secondary" @click="sendDailyReport">📲 Bugungi hisobotni Telegramga yuborish</button>
+                        </div>
 
                         <div class="stats-grid">
                             <div class="stat-card">
@@ -1241,6 +1244,45 @@ const app = createApp({
             const busiestHour = Object.keys(hourCounts).sort((a, b) => hourCounts[b] - hourCounts[a])[0] || '';
 
             this.stats = { todayRevenue, weekRevenue, topService, busiestHour };
+        },
+
+        sendDailyReport() {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const todayBookings = this.bookings.filter(b => b.date === todayStr);
+            const confirmed = todayBookings.filter(b => b.status !== 'cancelled');
+            const cancelled = todayBookings.filter(b => b.status === 'cancelled');
+
+            const revenue = confirmed.reduce((sum, b) => sum + (Number(b.price) || 0), 0);
+
+            // Sartaroshlar bo'yicha taqsimot
+            const barberCounts = {};
+            confirmed.forEach(b => {
+                barberCounts[b.barberName] = (barberCounts[b.barberName] || 0) + 1;
+            });
+            const barberLines = Object.keys(barberCounts).length > 0
+                ? Object.entries(barberCounts).map(([name, count]) => `   • ${name}: ${count} ta mijoz`).join('\n')
+                : '   — bron yo\'q';
+
+            // Eng mashhur xizmat
+            const serviceCounts = {};
+            confirmed.forEach(b => {
+                serviceCounts[b.serviceName] = (serviceCounts[b.serviceName] || 0) + 1;
+            });
+            const topService = Object.keys(serviceCounts).sort((a, b) => serviceCounts[b] - serviceCounts[a])[0] || '—';
+
+            const dateLabel = new Date().toLocaleDateString('uz-UZ', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            const message =
+                `📋 <b>Kunlik hisobot — ${dateLabel}</b>\n\n` +
+                `✅ Tasdiqlangan bronlar: ${confirmed.length} ta\n` +
+                `❌ Bekor qilingan: ${cancelled.length} ta\n` +
+                `💰 Bugungi daromad: ${revenue.toLocaleString()} so'm\n` +
+                `🔥 Eng mashhur xizmat: ${topService}\n\n` +
+                `✂️ Sartaroshlar bo'yicha:\n${barberLines}`;
+
+            sendTelegramNotification(message);
+            this.successMessage = '✓ Kunlik hisobot Telegramga yuborildi';
+            setTimeout(() => this.successMessage = '', 3000);
         },
 
         renderCharts() {
