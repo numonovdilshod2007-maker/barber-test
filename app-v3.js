@@ -2,7 +2,7 @@ console.log('app-v3.js loaded');
 console.log('app-v3.js sees FIREBASE_CONFIG.apiKey =', typeof FIREBASE_CONFIG !== 'undefined' ? FIREBASE_CONFIG.apiKey : 'undefined');
 const { createApp } = Vue;
 
-const ADMIN_EMAILS = ['dnumonov49@gmail.com'];
+const ADMIN_EMAILS = ['dnumonov49@gmail.com', 'sabdumalikov0543@gmail.com'];
 
 const app = createApp({
     template: `
@@ -327,6 +327,48 @@ const app = createApp({
                     <h3 style="color: var(--ivory);">⚙️ Admin Panel</h3>
 
                     <div class="admin-form">
+                        <h4 style="margin-bottom: 18px;">📊 Statistika</h4>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Bugungi daromad</div>
+                                <div class="stat-value">{{ stats.todayRevenue.toLocaleString() }} so'm</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Shu hafta daromad</div>
+                                <div class="stat-value">{{ stats.weekRevenue.toLocaleString() }} so'm</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Eng mashhur xizmat</div>
+                                <div class="stat-value stat-value-sm">{{ stats.topService || '—' }}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Eng band soat</div>
+                                <div class="stat-value stat-value-sm">{{ stats.busiestHour || '—' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="charts-grid">
+                            <div class="chart-box">
+                                <div class="chart-title">Haftalik daromad (so'nggi 7 kun)</div>
+                                <canvas ref="revenueChart" height="220"></canvas>
+                            </div>
+                            <div class="chart-box">
+                                <div class="chart-title">Xizmatlar bo'yicha bronlar</div>
+                                <canvas ref="servicesChart" height="220"></canvas>
+                            </div>
+                            <div class="chart-box">
+                                <div class="chart-title">Sartoroshlar bo'yicha bronlar</div>
+                                <canvas ref="barbersChart" height="220"></canvas>
+                            </div>
+                            <div class="chart-box">
+                                <div class="chart-title">Band soatlar</div>
+                                <canvas ref="hoursChart" height="220"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-form">
                         <h4 style="margin-bottom: 15px;">Yangi Xizmat Qo'shish</h4>
                         <div class="form-row">
                             <div class="form-group">
@@ -502,7 +544,14 @@ const app = createApp({
                 barberRating: 5,
                 barberAvatar: '💇'
             },
-            timeSlots: ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']
+            timeSlots: ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'],
+            stats: {
+                todayRevenue: 0,
+                weekRevenue: 0,
+                topService: '',
+                busiestHour: ''
+            },
+            _charts: {}
         };
     },
 
@@ -1161,6 +1210,151 @@ const app = createApp({
             }
         },
 
+        computeStats() {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 6);
+            const weekAgoStr = weekAgo.toISOString().slice(0, 10);
+
+            const confirmed = this.bookings.filter(b => b.status !== 'cancelled');
+
+            const todayRevenue = confirmed
+                .filter(b => b.date === todayStr)
+                .reduce((sum, b) => sum + (Number(b.price) || 0), 0);
+
+            const weekRevenue = confirmed
+                .filter(b => b.date >= weekAgoStr && b.date <= todayStr)
+                .reduce((sum, b) => sum + (Number(b.price) || 0), 0);
+
+            // Eng mashhur xizmat
+            const serviceCounts = {};
+            confirmed.forEach(b => {
+                serviceCounts[b.serviceName] = (serviceCounts[b.serviceName] || 0) + 1;
+            });
+            const topService = Object.keys(serviceCounts).sort((a, b) => serviceCounts[b] - serviceCounts[a])[0] || '';
+
+            // Eng band soat
+            const hourCounts = {};
+            confirmed.forEach(b => {
+                hourCounts[b.time] = (hourCounts[b.time] || 0) + 1;
+            });
+            const busiestHour = Object.keys(hourCounts).sort((a, b) => hourCounts[b] - hourCounts[a])[0] || '';
+
+            this.stats = { todayRevenue, weekRevenue, topService, busiestHour };
+        },
+
+        renderCharts() {
+            if (typeof Chart === 'undefined' || !this.currentUser?.isAdmin || this.activeTab !== 'admin') return;
+
+            const confirmed = this.bookings.filter(b => b.status !== 'cancelled');
+            const darkGrid = 'rgba(245, 241, 234, 0.08)';
+            const tickColor = '#b8aea0';
+            const palette = ['#c97a3d', '#e8c468', '#5cb88a', '#7dd3fc', '#e3654f', '#a78bfa'];
+
+            // --- 1. Haftalik daromad (so'nggi 7 kun) ---
+            const days = [];
+            const dayLabels = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const key = d.toISOString().slice(0, 10);
+                days.push(key);
+                dayLabels.push(d.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' }));
+            }
+            const revenueByDay = days.map(day =>
+                confirmed.filter(b => b.date === day).reduce((sum, b) => sum + (Number(b.price) || 0), 0)
+            );
+
+            this._renderChart('revenueChart', 'line', {
+                labels: dayLabels,
+                datasets: [{
+                    label: 'Daromad (so\'m)',
+                    data: revenueByDay,
+                    borderColor: '#c97a3d',
+                    backgroundColor: 'rgba(201, 122, 61, 0.15)',
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#e8c468',
+                    pointRadius: 4
+                }]
+            }, {
+                scales: {
+                    y: { beginAtZero: true, grid: { color: darkGrid }, ticks: { color: tickColor } },
+                    x: { grid: { color: darkGrid }, ticks: { color: tickColor } }
+                },
+                plugins: { legend: { display: false } }
+            });
+
+            // --- 2. Xizmatlar bo'yicha bronlar ---
+            const serviceCounts = {};
+            confirmed.forEach(b => { serviceCounts[b.serviceName] = (serviceCounts[b.serviceName] || 0) + 1; });
+            this._renderChart('servicesChart', 'doughnut', {
+                labels: Object.keys(serviceCounts),
+                datasets: [{
+                    data: Object.values(serviceCounts),
+                    backgroundColor: palette,
+                    borderColor: '#1a1512',
+                    borderWidth: 2
+                }]
+            }, {
+                plugins: { legend: { position: 'bottom', labels: { color: tickColor, padding: 12 } } }
+            });
+
+            // --- 3. Sartoroshlar bo'yicha bronlar ---
+            const barberCounts = {};
+            confirmed.forEach(b => { barberCounts[b.barberName] = (barberCounts[b.barberName] || 0) + 1; });
+            this._renderChart('barbersChart', 'doughnut', {
+                labels: Object.keys(barberCounts),
+                datasets: [{
+                    data: Object.values(barberCounts),
+                    backgroundColor: palette,
+                    borderColor: '#1a1512',
+                    borderWidth: 2
+                }]
+            }, {
+                plugins: { legend: { position: 'bottom', labels: { color: tickColor, padding: 12 } } }
+            });
+
+            // --- 4. Band soatlar ---
+            const hourCounts = {};
+            this.timeSlots.forEach(t => { hourCounts[t] = 0; });
+            confirmed.forEach(b => { hourCounts[b.time] = (hourCounts[b.time] || 0) + 1; });
+            this._renderChart('hoursChart', 'bar', {
+                labels: Object.keys(hourCounts),
+                datasets: [{
+                    label: 'Bronlar soni',
+                    data: Object.values(hourCounts),
+                    backgroundColor: '#c97a3d',
+                    borderRadius: 6
+                }]
+            }, {
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: darkGrid } },
+                    x: { grid: { color: darkGrid }, ticks: { color: tickColor } }
+                },
+                plugins: { legend: { display: false } }
+            });
+        },
+
+        _renderChart(refName, type, data, extraOptions = {}) {
+            const canvas = this.$refs[refName];
+            if (!canvas) return;
+
+            if (this._charts[refName]) {
+                this._charts[refName].destroy();
+            }
+
+            this._charts[refName] = new Chart(canvas, {
+                type,
+                data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    ...extraOptions
+                }
+            });
+        },
+
         previousMonth() {
             this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
             this.selectedDate = null;
@@ -1248,6 +1442,23 @@ const app = createApp({
                 }
             } catch (error) {
                 console.error('Maʼlumotlarni seed qilishda xato:', error);
+            }
+        }
+    },
+
+    watch: {
+        bookings: {
+            handler() {
+                this.computeStats();
+                // Chart.js canvas DOM'da render bo'lishini kutamiz
+                this.$nextTick(() => this.renderCharts());
+            },
+            deep: false
+        },
+        activeTab(newTab) {
+            if (newTab === 'admin') {
+                this.computeStats();
+                this.$nextTick(() => this.renderCharts());
             }
         }
     },

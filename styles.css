@@ -789,6 +789,69 @@ body {
     gap: 26px;
 }
 
+/* ============ Statistika Dashboard ============ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: linear-gradient(155deg, rgba(201, 122, 61, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.25s var(--ease-spring), border-color 0.25s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+}
+
+.stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ivory-faint);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+.stat-value-sm {
+    font-size: 17px;
+    color: var(--ivory);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.chart-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 18px;
+    position: relative;
+}
+
+.chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ivory-dim);
+    margin-bottom: 14px;
+}
+
 .admin-form {
     background: var(--bg-card);
     padding: 24px;
